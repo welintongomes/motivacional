@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frases Motivacionais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            color: #333;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .quote-container {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quote-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .quote-text {
+            color: white;
+            font-size: 1.3em;
+            line-height: 1.6;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(168, 237, 234, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(168, 237, 234, 0.6);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 237, 234, 0.6);
+        }
+
+        .quotes-list {
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .quote-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #4facfe;
+        }
+
+        .quote-item-text {
+            flex: 1;
+            margin-right: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .quote-item-author {
+            font-size: 0.8em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+
+        .stats {
+            background: rgba(79, 172, 254, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .btnNF {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 1.8em;
+            }
+
+            .quote-text {
+                font-size: 1.1em;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 8px;
+                width: 100%;
+                margin: 1px 0;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+                padding: 20px;
+            }
+
+            .btnNF {
+                background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+                color: white;
+                border: none;
+                border-radius: 50px;
+                padding: 19px 30px;
+                font-size: 1.8em;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin: 5px;
+                box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">💪 Frases Motivacionais</h1>
+        <p class="subtitle">Inspire-se a cada clique!</p>
+
+        <div class="quote-container">
+            <div class="quote-text" id="quoteText">
+                Clique no botão para gerar uma frase motivacional!
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="openAddModal()">➕ Adicionar</button>
+            <button class="btn btn-secondary" onclick="openManageModal()">📝 Gerenciar</button>
+            <button class="btnNF" onclick="generateQuote()">✨ Nova Frase</button>
+            <label for="importFile" class="btn file-label">📁 Importar</label>
+            <input type="file" id="importFile" class="file-input" accept=".json" onchange="importQuotes(event)">
+            <button class="btn btn-secondary" onclick="exportQuotes()">💾 Exportar</button>
+        </div>
+
+        <div class="stats" id="stats">
+            Total de frases: 0
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Frase -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addModal')">&times;</span>
+            <h2>Adicionar Nova Frase</h2>
+            <form onsubmit="addQuote(event)">
+                <div class="form-group">
+                    <label for="newQuoteText">Frase:</label>
+                    <textarea id="newQuoteText" placeholder="Digite a frase motivacional..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="newQuoteAuthor">Autor (opcional):</label>
+                    <input type="text" id="newQuoteAuthor" placeholder="Nome do autor">
+                </div>
+                <button type="submit" class="btn">Adicionar Frase</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Frases -->
+    <div id="manageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('manageModal')">&times;</span>
+            <h2>Gerenciar Frases</h2>
+            <div class="quotes-list" id="quotesList"></div>
+            <button class="btn btn-danger" onclick="clearAllQuotes()" style="margin-top: 20px;">🗑️ Limpar
+                Todas</button>
+        </div>
+    </div>
+
+    <script>
+        let quotes = [];
+        let currentQuoteIndex = -1;
+        let db;
+        let usedQuotes = new Set();
+        let lastResetTime = null;
+
+        // Frases iniciais
+        const defaultQuotes = [
+            { text: "O sucesso é a soma de pequenos esforços repetidos dia após dia.", author: "Robert Collier" },
+            { text: "Não deixe que o medo de falhar seja maior que a sua vontade de vencer.", author: "" },
+            { text: "O único lugar onde o sucesso vem antes do trabalho é no dicionário.", author: "Albert Einstein" },
+            { text: "Acredite em si mesmo e tudo será possível.", author: "" },
+            { text: "A persistência é o caminho do êxito.", author: "Charles Chaplin" },
+            { text: "Grandes conquistas requerem grandes ambições.", author: "Heráclito" },
+            { text: "O futuro pertence àqueles que acreditam na beleza de seus sonhos.", author: "Eleanor Roosevelt" },
+            { text: "Seja você mesmo a mudança que deseja ver no mundo.", author: "Gandhi" },
+            { text: "A única forma de fazer um excelente trabalho é amar o que você faz.", author: "Steve Jobs" },
+            { text: "Nunca é tarde demais para ser aquilo que você poderia ter sido.", author: "George Eliot" }
+        ];
+
+        // Inicializar IndexedDB
+        function initDB() {
+            const request = indexedDB.open('MotivationalQuotesDB', 1);
+
+            request.onerror = function (event) {
+                console.error('Erro ao abrir o banco de dados:', event);
+            };
+
+            request.onsuccess = function (event) {
+                db = event.target.result;
+                loadQuotes();
+            };
+
+            request.onupgradeneeded = function (event) {
+                db = event.target.result;
+                const objectStore = db.createObjectStore('quotes', { keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex('text', 'text', { unique: false });
+                objectStore.createIndex('author', 'author', { unique: false });
+            };
+        }
+
+        // Carregar frases do IndexedDB
+        function loadQuotes() {
+            const transaction = db.transaction(['quotes'], 'readonly');
+            const objectStore = transaction.objectStore('quotes');
+            const request = objectStore.getAll();
+
+            request.onsuccess = function (event) {
+                quotes = event.target.result;
+                if (quotes.length === 0) {
+                    // Se não há frases, adicionar as padrão
+                    addDefaultQuotes();
+                } else {
+                    loadUsedQuotes();
+                    updateStats();
+                }
+            };
+        }
+
+        // Carregar lista de frases já usadas
+        function loadUsedQuotes() {
+            const stored = localStorage.getItem('usedQuotes');
+            const storedTime = localStorage.getItem('lastResetTime');
+
+            if (stored && storedTime) {
+                const timeDiff = Date.now() - parseInt(storedTime);
+                const hours24 = 24 * 60 * 60 * 1000; // 24 horas em millisegundos
+
+                if (timeDiff < hours24) {
+                    usedQuotes = new Set(JSON.parse(stored));
+                    lastResetTime = parseInt(storedTime);
+                } else {
+                    // Resetar após 24 horas
+                    resetUsedQuotes();
+                }
+            } else {
+                resetUsedQuotes();
+            }
+        }
+
+        // Salvar lista de frases usadas
+        function saveUsedQuotes() {
+            localStorage.setItem('usedQuotes', JSON.stringify([...usedQuotes]));
+            localStorage.setItem('lastResetTime', lastResetTime.toString());
+        }
+
+        // Resetar lista de frases usadas
+        function resetUsedQuotes() {
+            usedQuotes.clear();
+            lastResetTime = Date.now();
+            saveUsedQuotes();
+        }
+
+        // Adicionar frases padrão
+        function addDefaultQuotes() {
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+
+            defaultQuotes.forEach(quote => {
+                objectStore.add(quote);
+            });
+
+            transaction.oncomplete = function () {
+                loadQuotes();
+            };
+        }
+
+        // Salvar frase no IndexedDB
+        function saveQuote(quote) {
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+            objectStore.add(quote);
+
+            transaction.oncomplete = function () {
+                loadQuotes();
+                // Não resetar as frases usadas ao adicionar novas
+            };
+        }
+
+        // Deletar frase do IndexedDB
+        function deleteQuote(id) {
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+            objectStore.delete(id);
+
+            transaction.oncomplete = function () {
+                loadQuotes();
+                loadManageModal();
+            };
+        }
+
+        // Limpar todas as frases
+        function clearAllQuotes() {
+            if (confirm('Tem certeza que deseja apagar todas as frases?')) {
+                const transaction = db.transaction(['quotes'], 'readwrite');
+                const objectStore = transaction.objectStore('quotes');
+                objectStore.clear();
+
+                transaction.oncomplete = function () {
+                    quotes = [];
+                    resetUsedQuotes(); // Resetar também as frases usadas
+                    updateStats();
+                    loadManageModal();
+                    document.getElementById('quoteText').textContent = 'Clique no botão para gerar uma frase motivacional!';
+                };
+            }
+        }
+
+        // Gerar frase aleatória
+        function generateQuote() {
+            if (quotes.length === 0) {
+                document.getElementById('quoteText').textContent = 'Nenhuma frase disponível. Adicione algumas frases!';
+                return;
+            }
+
+            // Verificar se passou 24 horas desde o último reset
+            if (lastResetTime) {
+                const timeDiff = Date.now() - lastResetTime;
+                const hours24 = 24 * 60 * 60 * 1000;
+
+                if (timeDiff >= hours24) {
+                    resetUsedQuotes();
+                }
+            }
+
+            // Se todas as frases foram usadas, resetar
+            if (usedQuotes.size >= quotes.length) {
+                resetUsedQuotes();
+            }
+
+            // Encontrar frases disponíveis (não usadas)
+            const availableQuotes = quotes.filter((quote, index) => !usedQuotes.has(index));
+
+            if (availableQuotes.length === 0) {
+                resetUsedQuotes();
+                return generateQuote(); // Tentar novamente após reset
+            }
+
+            // Selecionar uma frase aleatória das disponíveis
+            const randomIndex = Math.floor(Math.random() * availableQuotes.length);
+            const selectedQuote = availableQuotes[randomIndex];
+
+            // Encontrar o índice original da frase selecionada
+            const originalIndex = quotes.findIndex(quote =>
+                quote.text === selectedQuote.text && quote.author === selectedQuote.author
+            );
+
+            // Marcar como usada
+            usedQuotes.add(originalIndex);
+            saveUsedQuotes();
+
+            currentQuoteIndex = originalIndex;
+
+            const quoteElement = document.getElementById('quoteText');
+            quoteElement.style.animation = 'none';
+            quoteElement.offsetHeight; // Trigger reflow
+            quoteElement.style.animation = 'fadeIn 0.5s ease-in';
+
+            quoteElement.innerHTML = `
+                "${selectedQuote.text}"
+                ${selectedQuote.author ? `<div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">- ${selectedQuote.author}</div>` : ''}
+            `;
+
+            updateStats();
+        }
+
+        // Adicionar nova frase
+        function addQuote(event) {
+            event.preventDefault();
+            const text = document.getElementById('newQuoteText').value.trim();
+            const author = document.getElementById('newQuoteAuthor').value.trim();
+
+            if (text) {
+                const newQuote = { text, author };
+                saveQuote(newQuote);
+
+                document.getElementById('newQuoteText').value = '';
+                document.getElementById('newQuoteAuthor').value = '';
+                closeModal('addModal');
+
+                alert('Frase adicionada com sucesso!');
+            }
+        }
+
+        // Abrir modal
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+        }
+
+        function openManageModal() {
+            document.getElementById('manageModal').style.display = 'block';
+            loadManageModal();
+        }
+
+        // Fechar modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Carregar lista de frases no modal de gerenciar
+        function loadManageModal() {
+            const quotesList = document.getElementById('quotesList');
+            quotesList.innerHTML = '';
+
+            quotes.forEach(quote => {
+                const quoteItem = document.createElement('div');
+                quoteItem.className = 'quote-item';
+                quoteItem.innerHTML = `
+                    <div>
+                        <div class="quote-item-text">"${quote.text}"</div>
+                        ${quote.author ? `<div class="quote-item-author">- ${quote.author}</div>` : ''}
+                    </div>
+                    <button class="delete-btn" onclick="deleteQuote(${quote.id})" title="Deletar frase">×</button>
+                `;
+                quotesList.appendChild(quoteItem);
+            });
+        }
+
+        // Exportar frases
+        function exportQuotes() {
+            if (quotes.length === 0) {
+                alert('Não há frases para exportar!');
+                return;
+            }
+
+            const dataStr = JSON.stringify(quotes.map(q => ({ text: q.text, author: q.author })), null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'frases_motivacionais.json';
+            link.click();
+
+            alert('Frases exportadas com sucesso!');
+        }
+
+        // Importar frases
+        function importQuotes(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedQuotes = JSON.parse(e.target.result);
+
+                    if (!Array.isArray(importedQuotes)) {
+                        throw new Error('Formato inválido');
+                    }
+
+                    const transaction = db.transaction(['quotes'], 'readwrite');
+                    const objectStore = transaction.objectStore('quotes');
+
+                    importedQuotes.forEach(quote => {
+                        if (quote.text) {
+                            objectStore.add({
+                                text: quote.text,
+                                author: quote.author || ''
+                            });
+                        }
+                    });
+
+                    transaction.oncomplete = function () {
+                        loadQuotes();
+                        resetUsedQuotes(); // Resetar ao importar novas frases
+                        alert(`${importedQuotes.length} frases importadas com sucesso!`);
+                    };
+
+                } catch (error) {
+                    alert('Erro ao importar arquivo. Verifique se o formato está correto.');
+                }
+            };
+
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            const remaining = quotes.length - usedQuotes.size;
+            const nextReset = lastResetTime ? new Date(lastResetTime + 24 * 60 * 60 * 1000) : null;
+
+            let statsText = `Total de frases: ${quotes.length}`;
+
+            if (quotes.length > 0) {
+                statsText += ` | Restantes: ${remaining}`;
+
+                if (nextReset && remaining === 0) {
+                    const now = new Date();
+                    if (nextReset > now) {
+                        const hoursLeft = Math.ceil((nextReset - now) / (1000 * 60 * 60));
+                        statsText += ` | Reset em: ${hoursLeft}h`;
+                    }
+                }
+            }
+
+            document.getElementById('stats').textContent = statsText;
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function (event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Inicializar aplicação
+        window.onload = function () {
+            initDB();
+        }
+    </script>
+</body>
+
+</html>
