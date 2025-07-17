@@ -615,16 +615,18 @@
         }
 
         // Deletar frase do IndexedDB
-        function deleteQuote(id) {
-            const transaction = db.transaction(['quotes'], 'readwrite');
-            const objectStore = transaction.objectStore('quotes');
-            objectStore.delete(id);
+function deleteQuote(id) {
+    const transaction = db.transaction(['quotes'], 'readwrite');
+    const objectStore = transaction.objectStore('quotes');
+    objectStore.delete(id);
 
-            transaction.oncomplete = function () {
-                loadQuotes();
-                loadManageModal();
-            };
-        }
+    transaction.oncomplete = function () {
+        loadQuotes(() => {
+            filterQuotes(); // Reaplica a busca atual após deletar
+        });
+    };
+}
+
 
         // Limpar todas as frases
         function clearAllQuotes() {
@@ -775,36 +777,37 @@
     `;
         }
 
-        function saveEditedQuote(event, id) {
-            event.preventDefault();
-            const form = event.target;
-            const text = form.text.value.trim();
-            const author = form.author.value.trim();
+function saveEditedQuote(event, id) {
+    event.preventDefault();
+    const form = event.target;
+    const text = form.text.value.trim();
+    const author = form.author.value.trim();
 
-            if (!text) {
-                alert('O texto da frase é obrigatório.');
-                return;
-            }
+    if (!text) {
+        alert('O texto da frase é obrigatório.');
+        return;
+    }
 
-            const transaction = db.transaction(['quotes'], 'readwrite');
-            const objectStore = transaction.objectStore('quotes');
-            const request = objectStore.get(id);
+    const transaction = db.transaction(['quotes'], 'readwrite');
+    const objectStore = transaction.objectStore('quotes');
+    const request = objectStore.get(id);
 
-            request.onsuccess = function () {
-                const quote = request.result;
-                quote.text = text;
-                quote.author = author;
+    request.onsuccess = function () {
+        const quote = request.result;
+        quote.text = text;
+        quote.author = author;
 
-                const updateRequest = objectStore.put(quote);
+        const updateRequest = objectStore.put(quote);
 
-                updateRequest.onsuccess = function () {
-                    // Agora sim: só atualiza a lista após o array 'quotes' ter sido recarregado
-                    loadQuotes(() => {
-                        loadManageModal();
-                    });
-                };
-            };
-        }
+        updateRequest.onsuccess = function () {
+            // Atualiza o array de frases e reaplica o filtro da busca atual
+            loadQuotes(() => {
+                filterQuotes(); // Em vez de loadManageModal()
+            });
+        };
+    };
+}
+
 
 
 
