@@ -383,8 +383,6 @@
             color: #d00;
         }
 
-
-
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -615,17 +613,17 @@
         }
 
         // Deletar frase do IndexedDB
-function deleteQuote(id) {
-    const transaction = db.transaction(['quotes'], 'readwrite');
-    const objectStore = transaction.objectStore('quotes');
-    objectStore.delete(id);
+        function deleteQuote(id) {
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+            objectStore.delete(id);
 
-    transaction.oncomplete = function () {
-        loadQuotes(() => {
-            filterQuotes(); // Reaplica a busca atual após deletar
-        });
-    };
-}
+            transaction.oncomplete = function () {
+                loadQuotes(() => {
+                    filterQuotes(); // Reaplica a busca atual após deletar
+                });
+            };
+        }
 
 
         // Limpar todas as frases
@@ -771,42 +769,42 @@ function deleteQuote(id) {
         <form onsubmit="saveEditedQuote(event, ${id})" class="edit-form">
             <input type="text" name="text" value="${quote.text}" required />
             <input type="text" name="author" value="${quote.author || ''}" placeholder="Autor (opcional)" />
-            <button type="submit" class="save-btn">💾</button>
             <button type="button" class="cancel-btn" onclick="loadManageModal()">Cancelar</button>
+            <button type="submit" class="save-btn">💾</button>
         </form>
     `;
         }
 
-function saveEditedQuote(event, id) {
-    event.preventDefault();
-    const form = event.target;
-    const text = form.text.value.trim();
-    const author = form.author.value.trim();
+        function saveEditedQuote(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const text = form.text.value.trim();
+            const author = form.author.value.trim();
 
-    if (!text) {
-        alert('O texto da frase é obrigatório.');
-        return;
-    }
+            if (!text) {
+                alert('O texto da frase é obrigatório.');
+                return;
+            }
 
-    const transaction = db.transaction(['quotes'], 'readwrite');
-    const objectStore = transaction.objectStore('quotes');
-    const request = objectStore.get(id);
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+            const request = objectStore.get(id);
 
-    request.onsuccess = function () {
-        const quote = request.result;
-        quote.text = text;
-        quote.author = author;
+            request.onsuccess = function () {
+                const quote = request.result;
+                quote.text = text;
+                quote.author = author;
 
-        const updateRequest = objectStore.put(quote);
+                const updateRequest = objectStore.put(quote);
 
-        updateRequest.onsuccess = function () {
-            // Atualiza o array de frases e reaplica o filtro da busca atual
-            loadQuotes(() => {
-                filterQuotes(); // Em vez de loadManageModal()
-            });
-        };
-    };
-}
+                updateRequest.onsuccess = function () {
+                    // Atualiza o array de frases e reaplica o filtro da busca atual
+                    loadQuotes(() => {
+                        filterQuotes(); // Em vez de loadManageModal()
+                    });
+                };
+            };
+        }
 
 
 
