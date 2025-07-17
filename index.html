@@ -315,6 +315,74 @@
             box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
         }
 
+        /* css para botão x na pesquisa */
+        .search-container {
+            left: 7%;
+            position: relative;
+            width: 83%;
+            max-width: 400px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding-right: 30px;
+            /* espaço pro X */
+            box-sizing: border-box;
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 22px;
+            color: #999;
+            display: none;
+            /* escondido por padrão */
+        }
+
+        .quote-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #ccc;
+            gap: 10px;
+        }
+
+        .quote-content {
+            flex-grow: 1;
+            overflow-wrap: break-word;
+        }
+
+        .quote-actions {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            padding: 4px 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #444;
+            transition: color 0.2s;
+        }
+
+        .edit-btn:hover {
+            color: rgb(212, 117, 21);
+        }
+
+        .delete-btn:hover {
+            color: #d00;
+        }
+
 
 
         @media (max-width: 480px) {
@@ -410,6 +478,10 @@
     <!-- Modal Gerenciar Frases -->
     <div id="manageModal" class="modal">
         <div class="modal-content">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Filtrar frases..." oninput="filterQuotes()" />
+                <span id="clearSearch" class="clear-btn" onclick="clearSearch()">×</span>
+            </div>
             <span class="close" onclick="closeModal('manageModal')">&times;</span>
             <h2>Gerenciar Frases</h2>
             <div class="quotes-list" id="quotesList"></div>
@@ -460,8 +532,8 @@
             };
         }
 
-        // Carregar frases do IndexedDB
-        function loadQuotes() {
+        // Carregar frases do IndexedDB com callback opcional
+        function loadQuotes(callback) {
             const transaction = db.transaction(['quotes'], 'readonly');
             const objectStore = transaction.objectStore('quotes');
             const request = objectStore.getAll();
@@ -469,14 +541,18 @@
             request.onsuccess = function (event) {
                 quotes = event.target.result;
                 if (quotes.length === 0) {
-                    // Se não há frases, adicionar as padrão
                     addDefaultQuotes();
                 } else {
                     loadUsedQuotes();
                     updateStats();
                 }
+
+                if (callback) {
+                    callback(); // Chama o que você quiser depois que quotes estiverem atualizadas
+                }
             };
         }
+
 
         // Carregar lista de frases já usadas
         function loadUsedQuotes() {
@@ -659,23 +735,120 @@
         }
 
         // Carregar lista de frases no modal de gerenciar
-        function loadManageModal() {
+        function loadManageModal(filteredQuotes = quotes) {
             const quotesList = document.getElementById('quotesList');
             quotesList.innerHTML = '';
 
-            quotes.forEach(quote => {
+            filteredQuotes.forEach(quote => {
                 const quoteItem = document.createElement('div');
                 quoteItem.className = 'quote-item';
                 quoteItem.innerHTML = `
-                    <div>
-                        <div class="quote-item-text">"${quote.text}"</div>
-                        ${quote.author ? `<div class="quote-item-author">- ${quote.author}</div>` : ''}
-                    </div>
-                    <button class="delete-btn" onclick="deleteQuote(${quote.id})" title="Deletar frase">×</button>
-                `;
+            <div class="quote-content">
+                <div class="quote-item-text">"${quote.text}"</div>
+                ${quote.author ? `<div class="quote-item-author">- ${quote.author}</div>` : ''}
+            </div>
+            <div class="quote-actions">
+                <button class="edit-btn" onclick="editQuote(${quote.id})" title="Editar frase">✎</button>
+                <button class="delete-btn" onclick="confirmDelete(${quote.id})" title="Deletar frase">×</button>
+            </div>
+            `;
                 quotesList.appendChild(quoteItem);
             });
         }
+
+        function editQuote(id) {
+            const quote = quotes.find(q => q.id === id);
+            if (!quote) return;
+
+            const quoteItem = [...document.querySelectorAll('.quote-item')]
+                .find(item => item.innerHTML.includes(`editQuote(${id})`));
+
+            if (!quoteItem) return;
+
+            quoteItem.innerHTML = `
+        <form onsubmit="saveEditedQuote(event, ${id})" class="edit-form">
+            <input type="text" name="text" value="${quote.text}" required />
+            <input type="text" name="author" value="${quote.author || ''}" placeholder="Autor (opcional)" />
+            <button type="submit" class="save-btn">💾</button>
+            <button type="button" class="cancel-btn" onclick="loadManageModal()">Cancelar</button>
+        </form>
+    `;
+        }
+
+        function saveEditedQuote(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const text = form.text.value.trim();
+            const author = form.author.value.trim();
+
+            if (!text) {
+                alert('O texto da frase é obrigatório.');
+                return;
+            }
+
+            const transaction = db.transaction(['quotes'], 'readwrite');
+            const objectStore = transaction.objectStore('quotes');
+            const request = objectStore.get(id);
+
+            request.onsuccess = function () {
+                const quote = request.result;
+                quote.text = text;
+                quote.author = author;
+
+                const updateRequest = objectStore.put(quote);
+
+                updateRequest.onsuccess = function () {
+                    // Agora sim: só atualiza a lista após o array 'quotes' ter sido recarregado
+                    loadQuotes(() => {
+                        loadManageModal();
+                    });
+                };
+            };
+        }
+
+
+
+        function confirmDelete(id) {
+            if (confirm('Tem certeza que deseja deletar esta frase?')) {
+                deleteQuote(id);
+            }
+        }
+
+
+
+        // pesquisa no modal gerenciamento
+        function filterQuotes() {
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearch');
+            const rawSearchTerm = searchInput.value;
+
+            // Função para normalizar e remover acentos
+            const normalize = str => str
+                .toLowerCase()
+                .normalize('NFD') // separa os acentos
+                .replace(/[\u0300-\u036f]/g, ''); // remove os acentos
+
+            const searchTerm = normalize(rawSearchTerm);
+
+            clearBtn.style.display = searchTerm ? 'block' : 'none';
+
+            const filtered = quotes.filter(quote => {
+                const normalizedText = normalize(quote.text);
+                const normalizedAuthor = quote.author ? normalize(quote.author) : '';
+                return normalizedText.includes(searchTerm) || normalizedAuthor.includes(searchTerm);
+            });
+
+            loadManageModal(filtered);
+        }
+
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            filterQuotes(); // Atualiza a lista com todas as frases
+            document.getElementById('clearSearch').style.display = 'none';
+        }
+
 
         // Exportar frases
         function exportQuotes() {
